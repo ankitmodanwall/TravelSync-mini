@@ -26,6 +26,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -47,7 +48,6 @@ export default function LoginPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await login(values.email, values.password);
-      // Redirection is handled by AuthRedirect component
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -63,114 +63,171 @@ export default function LoginPage() {
   const loginHeroImage = placeholderImages.find(p => p.id === 'login-hero');
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center">
+    <div className="relative flex min-h-screen w-full items-center justify-center">
+
+      {/* Background Image */}
       {loginHeroImage && (
-        <Image
-          src={loginHeroImage.imageUrl}
-          alt={loginHeroImage.description}
-          fill
-          className="object-cover brightness-[0.4]"
-          data-ai-hint={loginHeroImage.imageHint}
-        />
+        <motion.div
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Image
+            src={loginHeroImage.imageUrl}
+            alt={loginHeroImage.description}
+            fill
+            className="object-cover brightness-[0.4]"
+            data-ai-hint={loginHeroImage.imageHint}
+          />
+        </motion.div>
       )}
-      <div className="relative z-10 w-full max-w-md p-4">
-        <Card className="bg-background/80 backdrop-blur-sm">
+
+      {/* Card Wrapper */}
+      <motion.div
+        className="relative z-10 w-full max-w-md p-4"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="bg-background/80 backdrop-blur-md border border-white/10 shadow-xl">
+
+          {/* Header */}
           <CardHeader className="text-center">
-            <div className="mb-4 flex justify-center">
+            <motion.div
+              className="mb-4 flex justify-center"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               <Logo />
-            </div>
+            </motion.div>
+
             <CardTitle className="text-3xl font-bold font-headline">
               Login
             </CardTitle>
+
             <CardDescription className="text-balance">
               Enter your email below to login to your account
             </CardDescription>
           </CardHeader>
+
+          {/* Form */}
           <CardContent>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="grid gap-4"
               >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="m@example.com"
-                          {...field}
-                          type="email"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                          href="#"
-                          className="ml-auto inline-block text-sm underline"
-                        >
-                          Forgot your password?
-                        </Link>
-                      </div>
-                      <FormControl>
-                        <Input type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={form.formState.isSubmitting}
+
+                {/* Email */}
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
                 >
-                  {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  type="button"
-                  onClick={loginWithGoogle}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="m@example.com"
+                            {...field}
+                            type="email"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Password */}
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  <svg
-                    className="mr-2 h-4 w-4"
-                    aria-hidden="true"
-                    focusable="false"
-                    data-prefix="fab"
-                    data-icon="google"
-                    role="img"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488 512"
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center">
+                          <FormLabel>Password</FormLabel>
+                          <Link
+                            href="#"
+                            className="ml-auto text-sm underline"
+                          >
+                            Forgot?
+                          </Link>
+                        </div>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Login Button */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={form.formState.isSubmitting}
                   >
-                    <path
+                    {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
+                  </Button>
+                </motion.div>
+
+                {/* Google Login */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                    onClick={loginWithGoogle}
+                  >
+                    <svg
+                      className="mr-2 h-4 w-4"
+                      viewBox="0 0 488 512"
                       fill="currentColor"
-                      d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-69.2 69.2c-20.8-19.6-48.2-31.4-79-31.4-62.5 0-113.5 51.1-113.5 113.5s51 113.5 113.5 113.5c71.2 0 98.2-53.6 102.2-81.7H248v-87.3h236.1c2.3 12.7 3.9 26.9 3.9 42.4z"
-                    ></path>
-                  </svg>
-                  Login with Google
-                </Button>
+                    >
+                      <path d="M488 261.8C488 403.3 391.1 504 248 504..." />
+                    </svg>
+                    Login with Google
+                  </Button>
+                </motion.div>
+
               </form>
             </Form>
-            <div className="mt-4 text-center text-sm">
+
+            {/* Signup Link */}
+            <motion.div
+              className="mt-4 text-center text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="underline">
                 Sign up
               </Link>
-            </div>
+            </motion.div>
+
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }

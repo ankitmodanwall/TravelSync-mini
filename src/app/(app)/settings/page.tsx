@@ -64,8 +64,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
+    <div className="space-y-8 animate-fade-in-up">
+      <div className="space-y-2 animate-fade-in-up animation-delay-200">
         <h1 className="text-3xl md:text-4xl font-headline font-bold">
           Settings
         </h1>
@@ -73,6 +73,7 @@ export default function SettingsPage() {
           Manage your account and application settings.
         </p>
       </div>
+      <div className="animate-scale-in animation-delay-200 smooth-transition hover:-translate-y-1">
 
       <Card>
         <CardHeader>
@@ -103,7 +104,11 @@ export default function SettingsPage() {
                   </FormItem>
                 )}
               />
-               <Button type="submit" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
+               <Button
+                    type="submit"
+                    disabled={form.formState.isSubmitting || !form.formState.isDirty}
+                    className="smooth-transition hover:scale-105 active:scale-95"
+                  >
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
               </Button>
@@ -111,6 +116,7 @@ export default function SettingsPage() {
           </Form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

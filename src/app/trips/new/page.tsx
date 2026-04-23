@@ -38,7 +38,17 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
 import { useFirestore } from '@/firebase';
-import { addDoc, collection, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  updateDoc,
+  Timestamp,
+} from 'firebase/firestore';
+
+import { motion } from 'framer-motion';
+
+/* ---------------- Schema ---------------- */
 
 const formSchema = z.object({
   destination: z
@@ -46,17 +56,22 @@ const formSchema = z.object({
     .min(2, { message: 'Destination must be at least 2 characters.' }),
   dates: z.object(
     {
-      from: z.date({ required_error: 'A start date is required.' }),
-      to: z.date({ required_error: 'An end date is required.' }),
+      from: z.date(),
+      to: z.date(),
     },
     { required_error: 'Please select a date range.' }
   ),
-  tripType: z.string({ required_error: 'Please select a trip type.' }),
+  tripType: z.string(),
   budget: z.preprocess(
-    (a) => (a === '' || a === undefined ? undefined : parseFloat(z.string().parse(a))),
-    z.number().positive({ message: 'Budget must be a positive number.' }).optional()
+    (a) =>
+      a === '' || a === undefined
+        ? undefined
+        : parseFloat(z.string().parse(a)),
+    z.number().positive().optional()
   ),
 });
+
+/* ---------------- Page ---------------- */
 
 export default function NewTripPage() {
   const router = useRouter();
@@ -65,7 +80,7 @@ export default function NewTripPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { user } = useAuth();
   const firestore = useFirestore();
-  
+
   const destinationParam = searchParams.get('destination');
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -82,27 +97,26 @@ export default function NewTripPage() {
     }
   }, [destinationParam, form]);
 
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user || !firestore) {
       toast({
         variant: 'destructive',
         title: 'Authentication Error',
-        description: 'You must be logged in to create a trip.',
       });
       return;
     }
 
     setIsGenerating(true);
+
     const duration =
       (values.dates.to.getTime() - values.dates.from.getTime()) /
         (1000 * 3600 * 24) +
       1;
 
     try {
-      // First, create the trip document to get an ID
       const tripsCollection = collection(firestore, 'trips');
-      const newTripData = {
+
+      const docRef = await addDoc(tripsCollection, {
         name: `Trip to ${values.destination}`,
         destination: values.destination,
         startDate: Timestamp.fromDate(values.dates.from),
@@ -111,208 +125,203 @@ export default function NewTripPage() {
         collaboratorIds: [user.uid],
         imageUrl: `https://picsum.photos/seed/${Math.random()}/600/400`,
         imageHint: 'travel landscape',
-        itinerary: [], // Start with an empty itinerary
+        itinerary: [],
         budget: values.budget || 0,
-      };
-
-      const docRef = await addDoc(tripsCollection, newTripData);
+      });
 
       toast({
         title: 'Trip Created!',
-        description: 'Now generating your AI-powered itinerary...',
+        description: 'Generating AI itinerary...',
       });
 
-      // Now, generate the itinerary
-      try {
-        const aiResponse = await generateItineraryFromPrompt({
-          destination: values.destination,
-          duration,
-          tripType: values.tripType,
-          budget: values.budget,
-        });
+      const aiResponse = await generateItineraryFromPrompt({
+        destination: values.destination,
+        duration,
+        tripType: values.tripType,
+        budget: values.budget,
+      });
 
-        // Parse and update the document
-        const itineraryObject = JSON.parse(aiResponse.itinerary);
-        const tripDocRef = doc(firestore, 'trips', docRef.id);
-        await updateDoc(tripDocRef, {
-          itinerary: itineraryObject.itinerary || [],
-        });
+      const itineraryObject = JSON.parse(aiResponse.itinerary);
 
-        toast({
-          title: 'Itinerary Generated!',
-          description: 'Your new adventure has been planned.',
-        });
-      } catch (aiError) {
-        console.error("Error generating or saving itinerary:", aiError);
-        toast({
-          variant: 'destructive',
-          title: 'AI Itinerary Failed',
-          description: 'Could not generate an itinerary, but your trip was saved. You can try generating it again from the trip page.',
-        });
-      }
+      await updateDoc(doc(firestore, 'trips', docRef.id), {
+        itinerary: itineraryObject.itinerary || [],
+      });
 
       router.push(`/trips/${docRef.id}`);
-
     } catch (error) {
-      console.error('Failed to create trip', error);
       toast({
         variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: 'There was a problem creating your trip.',
+        title: 'Error creating trip',
       });
       setIsGenerating(false);
-    } 
+    }
   };
 
+  /* ---------------- UI ---------------- */
+
   return (
-    <div className='max-w-4xl mx-auto'>
-       <div className="space-y-2 mb-8">
-          <h1 className="text-3xl md:text-4xl font-headline font-bold">
-            Plan a New Trip
-          </h1>
-          <p className="text-muted-foreground">
-            Fill in the details below to start your next journey.
-          </p>
-        </div>
+    <motion.div
+      className="max-w-4xl mx-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Header */}
+      <motion.div
+        className="space-y-2 mb-8"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 className="text-3xl md:text-4xl font-headline font-bold">
+          Plan a New Trip
+        </h1>
+        <p className="text-muted-foreground">
+          Fill in the details below to start your journey.
+        </p>
+      </motion.div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Trip Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="destination"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Destination</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Paris, France" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Where are you heading to?
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      {/* Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="shadow-xl border border-white/10 bg-background/80 backdrop-blur-md">
+          <CardHeader>
+            <CardTitle>Trip Details</CardTitle>
+          </CardHeader>
 
-              <FormField
-                control={form.control}
-                name="dates"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Trip Dates</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+
+                {/* Destination */}
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="destination"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Destination</FormLabel>
                         <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-full justify-start text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value?.from ? (
-                              field.value.to ? (
-                                <>
-                                  {format(field.value.from, 'LLL dd, y')} -{' '}
-                                  {format(field.value.to, 'LLL dd, y')}
-                                </>
-                              ) : (
-                                format(field.value.from, 'LLL dd, y')
-                              )
-                            ) : (
-                              <span>Pick a date range</span>
-                            )}
-                          </Button>
+                          <Input placeholder="Paris, France" {...field} />
                         </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          defaultMonth={field.value?.from}
-                          selected={field.value as DateRange}
-                          onSelect={field.onChange}
-                          numberOfMonths={2}
-                          disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription>
-                      Select the start and end dates for your trip.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <FormDescription>
+                          Where are you heading?
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <FormField
-                  control={form.control}
-                  name="tripType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type of Trip</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                {/* Dates */}
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="dates"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Trip Dates</FormLabel>
+
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full">
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value?.from
+                                ? format(field.value.from, 'PPP')
+                                : 'Pick dates'}
+                            </Button>
+                          </PopoverTrigger>
+
+                          <PopoverContent className="p-0">
+                            <Calendar
+                              mode="range"
+                              selected={field.value as DateRange}
+                              onSelect={field.onChange}
+                              numberOfMonths={2}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Trip Type + Budget */}
+                <motion.div
+                  className="grid md:grid-cols-2 gap-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="tripType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Trip Type</FormLabel>
+                        <Select onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="adventure">Adventure</SelectItem>
+                            <SelectItem value="budget">Budget</SelectItem>
+                            <SelectItem value="leisure">Leisure</SelectItem>
+                            <SelectItem value="family">Family</SelectItem>
+                            <SelectItem value="romantic">Romantic</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="budget"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Budget</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a trip style" />
-                          </SelectTrigger>
+                          <Input type="number" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="adventure">Adventure</SelectItem>
-                          <SelectItem value="budget">Budget</SelectItem>
-                          <SelectItem value="leisure">Leisure</SelectItem>
-                          <SelectItem value="family">Family-Friendly</SelectItem>
-                          <SelectItem value="romantic">Romantic</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        This helps us tailor suggestions for you.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="budget"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Budget ($)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="e.g., 2000" {...field} value={field.value ?? ''} />
-                      </FormControl>
-                      <FormDescription>
-                        Set an optional budget for this trip.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <Button type="submit" disabled={isGenerating}>
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Trip & Itinerary...
-                  </>
-                ) : (
-                  'Create Trip & Generate Itinerary'
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Submit */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button disabled={isGenerating} className="w-full">
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Trip & AI Plan...
+                      </>
+                    ) : (
+                      'Create Trip'
+                    )}
+                  </Button>
+                </motion.div>
+
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   );
 }
