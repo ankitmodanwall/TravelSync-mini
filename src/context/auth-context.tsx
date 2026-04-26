@@ -118,7 +118,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         syncUserProfile(userCredential.user);
       }
     } catch (error) {
-      console.error('Sign up error', error);
       throw error;
     }
   };

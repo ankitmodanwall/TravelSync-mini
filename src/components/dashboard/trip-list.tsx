@@ -70,8 +70,14 @@ export function TripList() {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {trips.map(trip => (
-        <TripCard key={trip.id} trip={trip} />
+      {trips.map((trip, i) => (
+        <div 
+          key={trip.id}
+          className="animate-in fade-in zoom-in-95 duration-500"
+          style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}
+        >
+          <TripCard trip={trip} />
+        </div>
       ))}
     </div>
   );
