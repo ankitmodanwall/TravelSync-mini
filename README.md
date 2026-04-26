@@ -7,7 +7,7 @@ Built with **Next.js, Firebase, and TypeScript**, the platform is scalable, real
 ---
 
 ## 🚀 Live Demo
-👉 travel-sync-mini.vercel.app
+👉 https://travel-sync-mini.vercel.app
 ---
 
 ## 📌 Core Features
