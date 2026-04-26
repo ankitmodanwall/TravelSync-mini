@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserNav } from './user-nav';
 import { useAuth } from '@/context/auth-context';
+import { ThemeToggle } from '@/components/theme-toggle';
 import type { ReactNode } from 'react';
 
 
@@ -13,7 +14,7 @@ export default function Header({ children }: { children?: ReactNode }) {
     <header
       className={cn(
         'sticky top-0 z-30 flex h-16 items-center gap-4 border-b px-4 md:px-6',
-        'border-sidebar-border bg-background/10 backdrop-blur-sm'
+        'border-border/50 bg-background/95 backdrop-blur-md shadow-sm'
       )}
     >
       {children}
@@ -29,6 +30,7 @@ export default function Header({ children }: { children?: ReactNode }) {
             <span className="hidden sm:inline">New Trip</span>
           </Link>
         </Button>
+        <ThemeToggle />
         { user && <UserNav user={user} /> }
       </div>
     </header>

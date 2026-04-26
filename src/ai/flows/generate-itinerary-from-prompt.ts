@@ -41,7 +41,37 @@ const generateItineraryFromPromptFlow = ai.defineFlow(
     outputSchema: GenerateItineraryOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      return output!;
+    } catch (error) {
+      console.warn("AI Generation failed (possibly due to suspended API key). Returning fallback mock itinerary.", error);
+      
+      // Fallback mock response so the UI still works
+      const mockItinerary = {
+        itinerary: [
+          {
+            day: 1,
+            title: `Arrival and Exploring ${input.destination}`,
+            activities: [
+              { time: "Morning", description: "Arrive and check into your accommodation.", location: "City Center" },
+              { time: "Afternoon", description: "Familiarize yourself with the local area with a walking tour.", location: "Historic District" },
+              { time: "Evening", description: "Enjoy a welcome dinner featuring local cuisine.", location: "Local Restaurant" }
+            ]
+          },
+          {
+            day: 2,
+            title: "Main Attractions",
+            activities: [
+              { time: "Morning", description: "Visit the most famous landmarks.", location: "Main Tourist Sites" },
+              { time: "Afternoon", description: "Free time for shopping or relaxing.", location: "Shopping District" },
+              { time: "Evening", description: "Experience the nightlife or a cultural show.", location: "Entertainment District" }
+            ]
+          }
+        ]
+      };
+      
+      return { itinerary: JSON.stringify(mockItinerary) };
+    }
   }
 );

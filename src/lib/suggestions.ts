@@ -34,7 +34,7 @@ export const travelSuggestions: TravelSuggestion[] = [
     country: 'Italy',
     description:
       "A stunning coastline of cliffside villages, azure waters, and vibrant lemon groves. The Amalfi Coast is a dream for lovers of scenic drives, delicious food, and Mediterranean charm.",
-    imageUrl: 'https://images.unsplash.com/photo-1533105079780-52b9be4ac20c',
+    imageUrl: 'https://images.unsplash.com/photo-1584721295315-59a79e6d0fa8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     imageHint: 'Amalfi Coast',
     topAttractions: [
       'Positano Village',
@@ -66,7 +66,7 @@ export const travelSuggestions: TravelSuggestion[] = [
     country: 'Egypt',
     description:
       'Step back in time in the land of the Pharaohs. Cairo is a bustling metropolis that serves as the gateway to the Pyramids of Giza, the Sphinx, and countless ancient treasures.',
-    imageUrl: 'https://images.unsplash.com/photo-1569056314990-faf33b544de8',
+    imageUrl: 'https://images.unsplash.com/photo-1600913248959-c1752bdd05e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     imageHint: 'Cairo pyramids',
     topAttractions: [
       'Pyramids of Giza and the Sphinx',
@@ -82,7 +82,7 @@ export const travelSuggestions: TravelSuggestion[] = [
     country: 'New Zealand',
     description:
       'Nestled on the shores of Lake Wakatipu, Queenstown is the adventure capital of the world. From bungee jumping to skiing, it offers adrenaline-pumping activities set against a backdrop of breathtaking alpine scenery.',
-    imageUrl: 'https://images.unsplash.com/photo-1579031737692-4950a412495b',
+    imageUrl: 'https://images.unsplash.com/photo-1505144808419-1957a94ca61e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     imageHint: 'Queenstown lake',
     topAttractions: [
       'Bungee Jumping at Kawarau Bridge',
@@ -115,7 +115,7 @@ export const travelSuggestions: TravelSuggestion[] = [
     country: 'Morocco',
     description:
       'Get lost in the vibrant chaos of Marrakech. This city is a sensory overload with its bustling souks, aromatic spices, stunning riads, and the lively Jemaa el-Fnaa square.',
-    imageUrl: 'https://images.unsplash.com/photo-1567982269559-0f4aa6adef94',
+    imageUrl: 'https://images.unsplash.com/photo-1730993175478-b634849f6536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     imageHint: 'Marrakech market',
     topAttractions: [
       'Jemaa el-Fnaa square',
@@ -131,7 +131,7 @@ export const travelSuggestions: TravelSuggestion[] = [
     country: 'The Land of Fire and Ice',
     description:
       'A world of dramatic landscapes, where volcanoes, glaciers, geysers, and waterfalls coexist. Chase the Northern Lights in winter or enjoy the midnight sun in summer.',
-    imageUrl: 'https://images.unsplash.com/photo-1534279295099-c5b5a0b503b4',
+    imageUrl: 'https://images.unsplash.com/photo-1693667627180-4f3285dbc403?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
     imageHint: 'Iceland waterfall',
     topAttractions: [
       'The Blue Lagoon',
