@@ -52,7 +52,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         backgroundImage: `url('/background-gradient.png')`,
       }}
     >
-      <div className="min-h-screen w-full bg-gradient-to-br from-background/80 via-background/60 to-background/80">
+      <div className="min-h-screen w-full bg-gradient-to-br from-background/90 via-background/70 to-background/90 dark:from-background/95 dark:via-background/90 dark:to-background/95">
         {isDesktop ? (
           <>
             <DesktopSidebar />

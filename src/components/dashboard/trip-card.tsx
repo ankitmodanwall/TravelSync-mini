@@ -13,17 +13,17 @@ export function TripCard({ trip }: { trip: Trip }) {
 
   return (
     <Link href={`/trips/${trip.id}`} className="group block">
-      <Card className="overflow-hidden transition-all duration-300 ease-in-out bg-card backdrop-blur-sm hover:shadow-xl hover:-translate-y-1">
+      <Card className="overflow-hidden transition-all duration-500 ease-out bg-card backdrop-blur-sm hover:shadow-2xl hover:-translate-y-2">
         <CardHeader className="p-0">
           <div className="relative h-48 w-full">
             <Image
               src={trip.imageUrl || 'https://picsum.photos/seed/default/600/400'}
               alt={trip.name}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               data-ai-hint={trip.imageHint}
             />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
           </div>
         </CardHeader>
         <CardContent className="p-4">

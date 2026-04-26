@@ -24,8 +24,8 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-12">
-      <div className="flex items-center justify-between">
+    <div className="space-y-12 animate-in fade-in duration-700">
+      <div className="flex items-center justify-between slide-in-from-bottom-4 animate-in fade-in duration-700">
         <div className="space-y-2">
           <h1 className="text-3xl font-headline font-bold md:text-4xl text-foreground">
             Your Trips
@@ -34,7 +34,7 @@ export default function DashboardPage() {
             Here are all your upcoming and past adventures. Ready for another one?
           </p>
         </div>
-        <Button asChild className="hidden md:flex bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 text-white transition-all duration-300 ease-in-out hover:from-indigo-600 hover:to-cyan-400 hover:shadow-lg">
+        <Button asChild className="hidden md:flex bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 text-white transition-all duration-300 ease-in-out hover:from-indigo-600 hover:to-cyan-400 hover:shadow-lg hover:scale-105 active:scale-95">
           <Link href="/trips/new">
             <Plus className="mr-2 h-4 w-4" />
             New Trip
@@ -44,12 +44,12 @@ export default function DashboardPage() {
       
       <TripList />
 
-      <Separator className="my-8 bg-border/50" />
+      <Separator className="my-8 bg-border/50 animate-in fade-in duration-1000" />
 
-      <div className="space-y-8">
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
         <div className="space-y-2">
           <h2 className="text-3xl font-headline font-bold md:text-4xl flex items-center gap-3">
-             <Sparkles className="text-cyan-400"/>
+             <Sparkles className="text-cyan-400 animate-pulse"/>
             Discover New Adventures
           </h2>
           <p className="text-muted-foreground">
@@ -59,11 +59,16 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {travelSuggestions.map((suggestion, i) => (
-             <SuggestionCard
-                key={suggestion.id}
-                suggestion={suggestion}
-                onOpen={() => handleOpenDialog(suggestion)}
-              />
+             <div 
+               key={suggestion.id} 
+               className="animate-in fade-in zoom-in-95 duration-500"
+               style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}
+             >
+               <SuggestionCard
+                  suggestion={suggestion}
+                  onOpen={() => handleOpenDialog(suggestion)}
+                />
+             </div>
           ))}
         </div>
       </div>
