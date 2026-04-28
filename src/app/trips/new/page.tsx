@@ -165,7 +165,8 @@ export default function NewTripPage() {
   };
 
   return (
-    <div className='max-w-4xl mx-auto'>
+    <div className="h-full overflow-y-auto pb-8">
+  <div className="max-w-4xl mx-auto px-4">
        <div className="space-y-2 mb-8">
           <h1 className="text-3xl md:text-4xl font-headline font-bold">
             Plan a New Trip
@@ -205,7 +206,7 @@ export default function NewTripPage() {
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Trip Dates</FormLabel>
-                    <Popover>
+                    <Popover modal={false}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -231,7 +232,11 @@ export default function NewTripPage() {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                     <PopoverContent
+  className="w-auto max-w-[calc(100vw-2rem)] overflow-x-auto p-0"
+  align="start"
+  sideOffset={8}
+>
                         <Calendar
                           initialFocus
                           mode="range"
@@ -313,6 +318,7 @@ export default function NewTripPage() {
           </Form>
         </CardContent>
       </Card>
-    </div>
+    </div>  
+  </div>
   );
 }
