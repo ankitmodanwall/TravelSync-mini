@@ -8,6 +8,8 @@ import type { Trip } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { useMemo } from 'react';
+import { EmptyState } from '@/components/empty-state';
+import { ErrorState } from '@/components/error-state';
 
 function TripListSkeleton() {
   return (
@@ -48,6 +50,7 @@ export function TripList() {
   const {
     data: trips,
     isLoading,
+    error,
   } = useCollection<Trip>(tripsQuery);
 
 
@@ -55,16 +58,25 @@ export function TripList() {
     return <TripListSkeleton />;
   }
 
+  if (error) {
+    return (
+      <ErrorState 
+        title="Couldn't load trips"
+        message="There was an error fetching your trips. This might be due to a connection issue or permissions."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   if (!trips || trips.length === 0) {
     return (
-      <Alert>
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>No trips yet!</AlertTitle>
-        <AlertDescription>
-          You haven&apos;t created any trips or been invited to any. Click &quot;New
-          Trip&quot; to start planning your next adventure.
-        </AlertDescription>
-      </Alert>
+      <EmptyState
+        icon={Terminal}
+        title="No trips yet!"
+        description="You haven't created any trips or been invited to any. Click 'New Trip' to start planning your next adventure."
+        actionLabel="New Trip"
+        actionHref="/trips/new"
+      />
     );
   }
 
