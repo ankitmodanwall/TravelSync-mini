@@ -8,6 +8,7 @@ import type { Trip } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { useMemo } from 'react';
+import { StaggerContainer, StaggerItem, ScaleOnHover } from '@/components/ui/motion';
 
 function TripListSkeleton() {
   return (
@@ -69,16 +70,14 @@ export function TripList() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {trips.map((trip, i) => (
-        <div 
-          key={trip.id}
-          className="animate-in fade-in zoom-in-95 duration-500"
-          style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}
-        >
-          <TripCard trip={trip} />
-        </div>
+    <StaggerContainer className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {trips.map((trip) => (
+        <StaggerItem key={trip.id}>
+          <ScaleOnHover>
+            <TripCard trip={trip} />
+          </ScaleOnHover>
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerContainer>
   );
 }

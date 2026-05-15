@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { FirebaseClientProvider } from '@/firebase';
 import { AuthRedirect } from '@/components/auth-redirect';
+import PageTransition from '@/components/ui/PageTransition';
 import { ThemeProvider } from '@/components/theme-provider';
 import './i18n';
 
@@ -52,7 +53,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              <AuthRedirect>{children}</AuthRedirect>
+              <AuthRedirect>
+                <PageTransition>{children}</PageTransition>
+              </AuthRedirect>
               <Toaster />
             </AuthProvider>
           </ThemeProvider>
