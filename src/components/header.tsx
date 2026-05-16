@@ -22,8 +22,8 @@ export default function Header({ children }: { children?: ReactNode }) {
       <div className="flex w-full items-center justify-end gap-2 md:gap-4">
         <Button
           asChild
+          variant="gradient"
           size="sm"
-          className="bg-gradient-to-r from-indigo-500 via-sky-400 to-cyan-300 text-white transition-all duration-300 ease-in-out hover:from-indigo-600 hover:to-cyan-400 hover:shadow-lg"
         >
           <Link href="/trips/new">
             <Plus className="h-4 w-4 sm:mr-2" />

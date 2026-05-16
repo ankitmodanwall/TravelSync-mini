@@ -14,8 +14,8 @@ export default {
         '400': '400ms',
       },
       fontFamily: {
-        body: ['"PT Sans"', 'sans-serif'],
-        headline: ['"Playfair Display"', 'serif'],
+        body: ['"Plus Jakarta Sans"', 'sans-serif'],
+        headline: ['"Noto Serif"', 'serif'],
         code: ['monospace'],
       },
       colors: {

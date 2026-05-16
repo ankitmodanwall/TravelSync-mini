@@ -1,6 +1,5 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage, Button, Typography } from '@/components/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,7 +45,7 @@ export function UserNav({ user, isSidebarOpen = true }: UserNavProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
+            <Avatar size="default" status="online">
               <AvatarImage src={user.photoURL || ''} alt={user.name || user.email || ''} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
@@ -55,10 +54,10 @@ export function UserNav({ user, isSidebarOpen = true }: UserNavProps) {
         <DropdownMenuContent className="w-56" align="end" forceMount>
            <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <Typography variant="small" className="font-medium leading-none">{user.name}</Typography>
+                <Typography variant="muted" className="leading-none">
                   {user.email}
-                </p>
+                </Typography>
               </div>
             </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -89,15 +88,15 @@ export function UserNav({ user, isSidebarOpen = true }: UserNavProps) {
   // Expanded sidebar view
   return (
     <div className="flex items-center gap-3">
-       <Avatar className="h-9 w-9">
+       <Avatar size="sm" status="online">
           <AvatarImage src={user.photoURL || ''} alt={user.name || user.email || ''} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       <div className={cn("flex flex-col space-y-0.5", !isSidebarOpen && "hidden")}>
-        <p className="text-sm font-medium leading-none truncate">{user.name}</p>
-        <p className="text-xs leading-none text-muted-foreground truncate">
+        <Typography variant="small" className="font-medium leading-none truncate">{user.name}</Typography>
+        <Typography variant="muted" className="text-[10px] leading-none truncate">
           {user.email}
-        </p>
+        </Typography>
       </div>
     </div>
   );

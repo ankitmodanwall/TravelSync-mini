@@ -232,7 +232,7 @@ const sidebarMenuButtonVariants = cva(
 );
 
 interface SidebarMenuButtonProps
-  extends ButtonProps,
+  extends Omit<ButtonProps, 'size'>,
     VariantProps<typeof sidebarMenuButtonVariants> {
   asChild?: boolean;
   isActive?: boolean;
