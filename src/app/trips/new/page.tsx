@@ -40,6 +40,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { useFirebaseApp } from '@/firebase';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
@@ -68,6 +70,10 @@ export default function NewTripPage() {
   const [step, setStep] = useState(1);
   const { user } = useAuth();
   const firestore = useFirestore();
+  const firebaseApp = useFirebaseApp();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   
   const destinationParam = searchParams.get('destination');
 
@@ -127,6 +133,40 @@ export default function NewTripPage() {
 
       const docRef = await addDoc(tripsCollection, newTripData);
 
+      if (imageFile) {
+        setIsUploading(true);
+        toast({
+          title: 'Uploading image...',
+          description: 'Saving your destination photo.',
+        });
+        const storage = getStorage(firebaseApp);
+        const storageRef = ref(storage, `trips/${docRef.id}/${imageFile.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, imageFile);
+        
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = snapshot.totalBytes > 0 ? (snapshot.bytesTransferred / snapshot.totalBytes) * 100 : 0;
+            setUploadProgress(progress);
+          }
+        );
+
+        try {
+          await uploadTask;
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await updateDoc(doc(firestore, 'trips', docRef.id), { imageUrl: downloadURL });
+        } catch (uploadError) {
+          console.error("Image upload failed:", uploadError);
+          toast({
+            variant: "destructive",
+            title: "Image Upload Failed",
+            description: "Could not upload your custom image. A default image will be used.",
+          });
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
       toast({
         title: 'Creating your adventure...',
         description: 'Our AI is crafting a personalized itinerary just for you.',
@@ -168,6 +208,7 @@ export default function NewTripPage() {
         title: 'Creation Failed',
         description: 'Something went wrong while saving your trip. Please try again.',
       });
+      setIsUploading(false);
       setIsGenerating(false);
     } 
   };
@@ -290,6 +331,20 @@ export default function NewTripPage() {
                             <FormMessage />
                           </FormItem>
                         )}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <FormLabel className="text-foreground/80">Cover Image (Optional)</FormLabel>
+                      <Input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setImageFile(e.target.files[0]);
+                          }
+                        }}
+                        className="bg-background/50 border-border/50 focus:border-primary/50 transition-colors cursor-pointer"
                       />
                     </div>
 
@@ -551,10 +606,14 @@ export default function NewTripPage() {
                   ) : (
                     <Button 
                       type="submit" 
-                      disabled={isGenerating}
+                      disabled={isGenerating || isUploading}
                       className="min-w-[200px] gap-2 bg-gradient-to-r from-primary to-[#6c63ff] hover:opacity-90 shadow-xl shadow-primary/20 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
                     >
-                      {isGenerating ? (
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" /> Uploading {Math.round(uploadProgress)}%
+                        </>
+                      ) : isGenerating ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" /> Generating...
                         </>
