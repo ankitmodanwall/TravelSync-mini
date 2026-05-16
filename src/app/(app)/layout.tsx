@@ -1,7 +1,6 @@
 'use client';
 import {
   SidebarProvider,
-  SidebarInset,
   SidebarTrigger,
   Sheet,
   SheetContent,
@@ -34,7 +33,7 @@ function DesktopSidebar() {
   return (
     <aside
       data-collapsed={!isOpen}
-      className="fixed left-0 top-0 z-20 hidden h-screen w-[280px] border-r border-sidebar-border bg-sidebar/70 backdrop-blur-xl transition-all duration-300 ease-in-out data-[collapsed=true]:w-[70px] md:block"
+      className="row-span-2 hidden h-screen w-[280px] border-r border-sidebar-border bg-sidebar/70 backdrop-blur-xl transition-all duration-300 ease-in-out data-[collapsed=true]:w-[70px] md:sticky md:top-0 md:block"
     >
       <div className="flex h-full flex-col overflow-hidden">
         <AppSidebar />
@@ -44,7 +43,8 @@ function DesktopSidebar() {
 }
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
-  const { isDesktop } = useSidebar();
+  const { isDesktop, isOpen } = useSidebar();
+  const gridColumns = isDesktop ? (isOpen ? '280px 1fr' : '70px 1fr') : '1fr';
   return (
     <div
       className="min-h-screen w-full bg-cover bg-center bg-fixed"
@@ -53,22 +53,29 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
       }}
     >
       <div className="min-h-screen w-full bg-gradient-to-br from-background/90 via-background/70 to-background/90 dark:from-background/95 dark:via-background/90 dark:to-background/95">
-        {isDesktop ? (
-          <>
-            <DesktopSidebar />
-            <Header>
-              <SidebarTrigger>
-                <PanelLeft />
-              </SidebarTrigger>
-            </Header>
-          </>
-        ) : (
-          <MobileSidebar />
-        )}
+        <div
+          className="min-h-screen w-full md:grid md:grid-rows-[auto,1fr]"
+          style={{ gridTemplateColumns: gridColumns }}
+        >
+          {isDesktop ? (
+            <>
+              <DesktopSidebar />
+              <div className="md:col-start-2 md:row-start-1">
+                <Header>
+                  <SidebarTrigger>
+                    <PanelLeft />
+                  </SidebarTrigger>
+                </Header>
+              </div>
+            </>
+          ) : (
+            <MobileSidebar />
+          )}
 
-        <SidebarInset>
-          <main className="p-6 lg:p-8">{children}</main>
-        </SidebarInset>
+          <main className="px-4 py-6 md:col-start-2 md:row-start-2 md:px-8 md:py-8">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );
