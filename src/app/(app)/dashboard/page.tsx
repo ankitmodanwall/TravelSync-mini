@@ -10,6 +10,7 @@ import { SuggestionDetailsDialog } from '@/components/discover/suggestion-detail
 import { travelSuggestions } from '@/lib/suggestions';
 import type { TravelSuggestion } from '@/lib/suggestions';
 import { Separator } from '@/components/ui/separator';
+import { StaggerContainer, StaggerItem, ScaleOnHover } from '@/components/ui/motion';
 
 export default function DashboardPage() {
   const [selectedSuggestion, setSelectedSuggestion] =
@@ -57,20 +58,18 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {travelSuggestions.map((suggestion, i) => (
-             <div 
-               key={suggestion.id} 
-               className="animate-in fade-in zoom-in-95 duration-500"
-               style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}
-             >
-               <SuggestionCard
-                  suggestion={suggestion}
-                  onOpen={() => handleOpenDialog(suggestion)}
-                />
-             </div>
+        <StaggerContainer className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {travelSuggestions.map((suggestion) => (
+             <StaggerItem key={suggestion.id}>
+               <ScaleOnHover>
+                 <SuggestionCard
+                    suggestion={suggestion}
+                    onOpen={() => handleOpenDialog(suggestion)}
+                  />
+               </ScaleOnHover>
+             </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
 
       {selectedSuggestion && (

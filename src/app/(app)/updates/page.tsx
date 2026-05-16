@@ -23,6 +23,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { EmptyState } from '@/components/empty-state';
+import { ErrorState } from '@/components/error-state';
 
 function UpdatesSkeleton() {
   return (
@@ -124,7 +126,7 @@ export default function UpdatesPage() {
     [tripsRef, user]
   );
 
-  const { data: trips, isLoading } = useCollection<Trip>(tripsQuery);
+  const { data: trips, isLoading, error } = useCollection<Trip>(tripsQuery);
 
   const upcomingTrips = useMemo(() => {
     if (!trips) return [];
@@ -147,6 +149,44 @@ export default function UpdatesPage() {
     );
   }, [trips]);
 
+  if (isLoading) {
+    return (
+        <div className="space-y-8">
+            <div className="space-y-2">
+                <h1 className="text-3xl md:text-4xl font-headline font-bold flex items-center gap-3">
+                <CalendarCheck />
+                Next-Day Updates
+                </h1>
+                <p className="text-muted-foreground">
+                Here are your trips that are starting tomorrow. Get ready!
+                </p>
+            </div>
+            <UpdatesSkeleton />
+        </div>
+    )
+  }
+
+  if (error) {
+    return (
+        <div className="space-y-8">
+            <div className="space-y-2">
+                <h1 className="text-3xl md:text-4xl font-headline font-bold flex items-center gap-3">
+                <CalendarCheck />
+                Next-Day Updates
+                </h1>
+                <p className="text-muted-foreground">
+                Here are your trips that are starting tomorrow. Get ready!
+                </p>
+            </div>
+            <ErrorState 
+                title="Couldn't load updates"
+                message="There was an error fetching your trip updates. Please try again."
+                onRetry={() => window.location.reload()}
+            />
+        </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -159,25 +199,21 @@ export default function UpdatesPage() {
         </p>
       </div>
 
-      {isLoading ? (
-        <UpdatesSkeleton />
-      ) : (
-        <div className="space-y-6">
-          {upcomingTrips.length > 0 ? (
-            upcomingTrips.map(trip => (
-              <TripUpdateCard key={trip.id} trip={trip} />
-            ))
-          ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground text-center">
-                  You have no trips starting tomorrow.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
+      <div className="space-y-6">
+        {upcomingTrips.length > 0 ? (
+          upcomingTrips.map(trip => (
+            <TripUpdateCard key={trip.id} trip={trip} />
+          ))
+        ) : (
+          <EmptyState
+            icon={CalendarCheck}
+            title="No trips tomorrow"
+            description="You have no trips starting tomorrow. Take this time to plan your next one!"
+            actionLabel="Plan a Trip"
+            actionHref="/trips/new"
+          />
+        )}
+      </div>
     </div>
   );
 }

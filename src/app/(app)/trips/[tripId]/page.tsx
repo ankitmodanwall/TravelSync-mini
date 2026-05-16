@@ -6,8 +6,11 @@ import { doc, updateDoc } from 'firebase/firestore';
 import type { Trip, ItineraryDay, Activity } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
-import { Calendar, MapPin, Sparkles, Clock, Map, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Sparkles, Clock, Map, Loader2, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { EmptyState } from '@/components/empty-state';
+import { ErrorState } from '@/components/error-state';
+import { LoadingState } from '@/components/loading-state';
 import {
   Card,
   CardContent,
@@ -53,7 +56,7 @@ export default function TripDetailPage() {
     [firestore, tripId]
   );
 
-  const { data: trip, isLoading } = useDoc<Trip>(tripRef);
+  const { data: trip, isLoading, error } = useDoc<Trip>(tripRef);
 
   const handleGenerateItinerary = async () => {
     if (!trip || !firestore || !tripRef) return;
@@ -95,8 +98,26 @@ export default function TripDetailPage() {
     return <TripDetailSkeleton />;
   }
 
+  if (error) {
+    return (
+      <ErrorState 
+        title="Trip not found"
+        message="We couldn't retrieve the trip details. It might have been deleted or you don't have permission to view it."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   if (!trip) {
-    return <div>Trip not found.</div>;
+    return (
+      <EmptyState
+        icon={AlertCircle}
+        title="Trip not found"
+        description="The trip you're looking for doesn't exist or has been removed."
+        actionLabel="Go to Dashboard"
+        actionHref="/dashboard"
+      />
+    );
   }
   
   const dateRange = trip.startDate && trip.endDate 

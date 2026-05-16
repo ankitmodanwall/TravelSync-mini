@@ -3,6 +3,7 @@
 import { useAuth } from '@/context/auth-context';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
+import { LoadingState } from '@/components/loading-state';
 
 const PUBLIC_ROUTES = ['/', '/login', '/signup'];
 
@@ -36,6 +37,8 @@ export function AuthRedirect({ children }: { children: ReactNode }) {
         </div>
       </div>
     );
+  if (loading || (user && isAuthRoute) || (!user && isProtectedRoute)) {
+    return <LoadingState message="Authenticating..." className="h-screen w-full" />;
   }
 
   // If no redirection is needed, render the page content
