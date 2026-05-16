@@ -51,7 +51,15 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   return (
     <SidebarContext.Provider value={{ isOpen, setIsOpen, isDesktop }}>
-      <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+      <TooltipProvider delayDuration={0}>
+        {isDesktop ? (
+          children
+        ) : (
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            {children}
+          </Sheet>
+        )}
+      </TooltipProvider>
     </SidebarContext.Provider>
   );
 }

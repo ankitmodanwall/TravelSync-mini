@@ -41,6 +41,7 @@ import { useAuth } from '@/context/auth-context';
 import { useFirestore } from '@/firebase';
 import { addDoc, collection, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { Textarea } from '@/components/ui/textarea';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Trip name must be at least 2 characters.' }),
@@ -70,6 +71,8 @@ export default function NewTripPage() {
   const firestore = useFirestore();
   
   const destinationParam = searchParams.get('destination');
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -213,7 +216,7 @@ export default function NewTripPage() {
         </div>
 
         {/* Progress Stepper */}
-        <div className="relative flex justify-between items-center max-w-2xl mx-auto mb-12">
+        <div className="relative flex justify-between items-center max-w-2xl mx-auto mb-12 px-2">
           <div className="absolute top-1/2 left-0 w-full h-0.5 bg-secondary -translate-y-1/2 z-0" />
           <div 
             className="absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-500 ease-in-out" 
@@ -226,16 +229,16 @@ export default function NewTripPage() {
             const isCurrent = step === s.id;
             
             return (
-              <div key={s.id} className="relative z-10 flex flex-col items-center gap-2">
+              <div key={s.id} className="relative z-10 flex flex-col items-center gap-1.5 sm:gap-2">
                 <div className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2",
+                  "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2",
                   isActive ? "bg-primary border-primary text-primary-foreground shadow-[0_0_15px_rgba(108,99,255,0.4)]" : "bg-background border-secondary text-muted-foreground",
                   isCurrent && "scale-110 ring-4 ring-primary/20"
                 )}>
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <span className={cn(
-                  "text-xs font-medium transition-colors duration-300",
+                  "text-[10px] sm:text-xs font-medium transition-colors duration-300 whitespace-nowrap",
                   isActive ? "text-foreground" : "text-muted-foreground"
                 )}>
                   {s.label}
@@ -325,16 +328,16 @@ export default function NewTripPage() {
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0 border-border/50 shadow-2xl" align="start">
-                              <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={field.value?.from}
-                                selected={field.value as DateRange}
-                                onSelect={field.onChange}
-                                numberOfMonths={2}
-                                disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                                className="bg-background rounded-md"
-                              />
+                                <Calendar
+                                  initialFocus
+                                  mode="range"
+                                  defaultMonth={field.value?.from}
+                                  selected={field.value as DateRange}
+                                  onSelect={field.onChange}
+                                  numberOfMonths={isDesktop ? 2 : 1}
+                                  disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                  className="bg-background rounded-md"
+                                />
                             </PopoverContent>
                           </Popover>
                           <FormMessage />
@@ -485,7 +488,7 @@ export default function NewTripPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         <div className="space-y-1">
                           <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Dates</p>
                           <p className="font-medium text-sm">
@@ -573,7 +576,8 @@ export default function NewTripPage() {
       </div>
 
       {/* Sidebar / AI Insights */}
-      <aside className="w-full lg:w-80 space-y-6">
+      {!isMobile && (
+        <aside className="w-full lg:w-80 space-y-6">
         <div className="sticky top-24 space-y-6">
           {/* Destination Preview Card */}
           <div className="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-2xl group">
@@ -643,6 +647,7 @@ export default function NewTripPage() {
           </div>
         </div>
       </aside>
+      )}
     </div>
   );
 }

@@ -46,11 +46,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              <AuthRedirect>{children}</AuthRedirect>
-              <ChatWidget />
               <AuthRedirect>
                 <PageTransition>{children}</PageTransition>
               </AuthRedirect>
+              <ChatWidget />
               <Toaster />
             </AuthProvider>
           </ThemeProvider>

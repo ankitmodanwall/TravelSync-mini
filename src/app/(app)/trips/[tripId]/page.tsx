@@ -125,8 +125,8 @@ export default function TripDetailPage() {
     : 'Date not set';
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="relative mb-8 h-80 w-full overflow-hidden rounded-2xl">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mb-8 h-56 w-full overflow-hidden rounded-2xl sm:h-72 md:h-80">
         <Image
           src={trip.imageUrl}
           alt={trip.name}
@@ -135,21 +135,21 @@ export default function TripDetailPage() {
           data-ai-hint={trip.imageHint}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 p-8">
-          <h1 className="font-headline text-5xl font-bold text-white">
+        <div className="absolute bottom-0 left-0 p-4 sm:p-6 md:p-8">
+          <h1 className="font-headline text-3xl font-bold text-white sm:text-4xl md:text-5xl">
             {trip.name}
           </h1>
         </div>
       </div>
       
       <div className="mb-8 space-y-6">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-base text-muted-foreground sm:gap-x-6 sm:text-lg">
           <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
+            <MapPin className="h-5 w-5 shrink-0" />
             <span>{trip.destination}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <Calendar className="h-5 w-5 shrink-0" />
             <span>{dateRange}</span>
           </div>
         </div>

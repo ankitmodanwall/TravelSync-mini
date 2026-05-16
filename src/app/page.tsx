@@ -20,19 +20,19 @@ export default function WelcomePage() {
           data-ai-hint={welcomeHeroImage.imageHint}
         />
       )}
-      <div className="relative z-10 mx-auto grid w-[450px] gap-8 text-center text-white">
+      <div className="relative z-10 mx-auto grid w-full max-w-lg gap-8 px-6 text-center text-white">
         <div className="flex justify-center">
           <Logo className="[&>span]:text-white" />
         </div>
-        <div className="grid gap-4 animate-fade-in animation-delay-200">
-          <Typography variant="h1" className="text-white md:text-5xl">
+        <div className="grid gap-4 animate-fade-in-up">
+          <Typography variant="h1" className="text-white text-3xl sm:text-4xl md:text-5xl">
             Craft Your Next Adventure
           </Typography>
           <Typography variant="lead" className="text-white/80">
             Our AI-powered planner helps you build the perfect itinerary, discover hidden gems, and collaborate with friends. Effortless planning, unforgettable journeys.
           </Typography>
         </div>
-        <div className="flex flex-col gap-4 mx-auto w-full max-w-sm animate-fade-in-up animation-delay-400">
+        <div className="flex flex-col gap-4 mx-auto w-full max-w-sm animate-fade-in-up animation-delay-200">
           <Button asChild variant="gradient" size="lg" className="w-full text-lg shadow-glow">
             <Link href="/signup">Start Planning with AI ✈️</Link>
           </Button>
