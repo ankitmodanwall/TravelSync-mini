@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -73,6 +72,7 @@ export default function NewTripPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       destination: destinationParam || '',
@@ -252,18 +252,170 @@ export default function NewTripPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 {/* Step 1: Details */}
                 {step === 1 && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="bg-secondary/10 p-6 rounded-2xl border border-border/30 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-foreground/80 font-semibold">Trip Title</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="Summer in Santorini" 
+                                  className="bg-background/50 border-border/50 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 hover:border-primary/30 transition-all"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="destination"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-foreground/80 font-semibold">Destination</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                  <Input 
+                                    placeholder="Santorini, Greece" 
+                                    className="pl-10 bg-background/50 border-border/50 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 hover:border-primary/30 transition-all"
+                                    {...field} 
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-secondary/10 p-6 rounded-2xl border border-border/30">
                       <FormField
                         control={form.control}
-                        name="name"
+                        name="dates"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel className="text-foreground/80 font-semibold mb-2">When are you going?</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      "w-full h-12 justify-start text-left font-normal bg-background/50 border-border/50 hover:bg-background/80 focus-visible:ring-2 focus-visible:ring-primary/50 hover:border-primary/30 transition-all",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    <CalendarIcon className="mr-3 h-5 w-5 text-primary" />
+                                    {field.value?.from ? (
+                                      field.value.to ? (
+                                        <span className="font-medium">
+                                          {format(field.value.from, 'PPP')} - {format(field.value.to, 'PPP')}
+                                        </span>
+                                      ) : (
+                                        format(field.value.from, 'PPP')
+                                      )
+                                    ) : (
+                                      <span>Select your travel window</span>
+                                    )}
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 border-border/50 shadow-2xl" align="start">
+                                <Calendar
+                                  initialFocus
+                                  mode="range"
+                                  defaultMonth={field.value?.from}
+                                  selected={field.value as DateRange}
+                                  onSelect={field.onChange}
+                                  numberOfMonths={2}
+                                  disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                  className="bg-background rounded-md"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                )}
+
+
+                {/* Step 2: Preferences */}
+                {step === 2 && (
+                  <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="bg-secondary/10 p-6 rounded-2xl border border-border/30 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="tripType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-foreground/80 font-semibold">Trip Style</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:ring-2 focus:ring-primary/50 hover:border-primary/30 transition-all">
+                                    <SelectValue placeholder="What's the vibe?" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="adventure">🏔️ Adventure & Exploration</SelectItem>
+                                  <SelectItem value="leisure">🏖️ Relaxation & Leisure</SelectItem>
+                                  <SelectItem value="culture">🏛️ Culture & History</SelectItem>
+                                  <SelectItem value="family">👨‍👩‍👧‍👦 Family Friendly</SelectItem>
+                                  <SelectItem value="romantic">🥂 Romantic Getaway</SelectItem>
+                                  <SelectItem value="foodie">🍳 Gastronomy & Food</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="travelerCount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-foreground/80 font-semibold">Number of Travelers</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:ring-2 focus:ring-primary/50 hover:border-primary/30 transition-all">
+                                    <SelectValue placeholder="How many people?" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="1">Solo Explorer</SelectItem>
+                                  <SelectItem value="2">Duo / Couple</SelectItem>
+                                  <SelectItem value="4">Small Group (3-5)</SelectItem>
+                                  <SelectItem value="8">Large Group (6+)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="bg-secondary/10 p-6 rounded-2xl border border-border/30">
+                      <FormField
+                        control={form.control}
+                        name="notes"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-foreground/80">Trip Title</FormLabel>
+                            <FormLabel className="text-foreground/80 font-semibold mb-2">Any special requests? (Optional)</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Summer in Santorini" 
-                                className="bg-background/50 border-border/50 focus:border-primary/50 transition-colors"
+                              <Textarea 
+                                placeholder="e.g., Vegan food options, low-walking routes, or must-see landmarks..." 
+                                className="min-h-[120px] bg-background/50 border-border/50 resize-none focus-visible:ring-2 focus-visible:ring-primary/50 hover:border-primary/30 transition-all"
                                 {...field} 
                               />
                             </FormControl>
@@ -271,151 +423,7 @@ export default function NewTripPage() {
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="destination"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-foreground/80">Destination</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                  placeholder="Santorini, Greece" 
-                                  className="pl-10 bg-background/50 border-border/50 focus:border-primary/50 transition-colors"
-                                  {...field} 
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
-
-                    <FormField
-                      control={form.control}
-                      name="dates"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel className="text-foreground/80">When are you going?</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-full h-12 justify-start text-left font-normal bg-background/50 border-border/50 hover:bg-background/80 transition-all",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  <CalendarIcon className="mr-3 h-5 w-5 text-primary" />
-                                  {field.value?.from ? (
-                                    field.value.to ? (
-                                      <span className="font-medium">
-                                        {format(field.value.from, 'PPP')} - {format(field.value.to, 'PPP')}
-                                      </span>
-                                    ) : (
-                                      format(field.value.from, 'PPP')
-                                    )
-                                  ) : (
-                                    <span>Select your travel window</span>
-                                  )}
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 border-border/50 shadow-2xl" align="start">
-                              <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={field.value?.from}
-                                selected={field.value as DateRange}
-                                onSelect={field.onChange}
-                                numberOfMonths={2}
-                                disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                                className="bg-background rounded-md"
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-
-                {/* Step 2: Preferences */}
-                {step === 2 && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="tripType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-foreground/80">Trip Style</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="h-12 bg-background/50 border-border/50">
-                                  <SelectValue placeholder="What's the vibe?" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="adventure">🏔️ Adventure & Exploration</SelectItem>
-                                <SelectItem value="leisure">🏖️ Relaxation & Leisure</SelectItem>
-                                <SelectItem value="culture">🏛️ Culture & History</SelectItem>
-                                <SelectItem value="family">👨‍👩‍👧‍👦 Family Friendly</SelectItem>
-                                <SelectItem value="romantic">🥂 Romantic Getaway</SelectItem>
-                                <SelectItem value="foodie">🍳 Gastronomy & Food</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="travelerCount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-foreground/80">Number of Travelers</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="h-12 bg-background/50 border-border/50">
-                                  <SelectValue placeholder="How many people?" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="1">Solo Explorer</SelectItem>
-                                <SelectItem value="2">Duo / Couple</SelectItem>
-                                <SelectItem value="4">Small Group (3-5)</SelectItem>
-                                <SelectItem value="8">Large Group (6+)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-foreground/80">Any special requests? (Optional)</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="e.g., Vegan food options, low-walking routes, or must-see landmarks..." 
-                              className="min-h-[120px] bg-background/50 border-border/50 resize-none"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
                 )}
 
@@ -535,7 +543,7 @@ export default function NewTripPage() {
                     variant="ghost"
                     onClick={prevStep}
                     disabled={step === 1 || isGenerating}
-                    className="gap-2 text-muted-foreground hover:text-foreground"
+                    className="gap-2 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronLeft className="w-4 h-4" /> Back
                   </Button>
@@ -544,7 +552,7 @@ export default function NewTripPage() {
                     <Button 
                       type="button" 
                       onClick={nextStep} 
-                      className="min-w-[140px] gap-2 shadow-lg shadow-primary/20 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+                      className="min-w-[140px] gap-2 shadow-lg shadow-primary/20 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Next Step <ChevronRight className="w-4 h-4" />
                     </Button>
@@ -552,7 +560,7 @@ export default function NewTripPage() {
                     <Button 
                       type="submit" 
                       disabled={isGenerating}
-                      className="min-w-[200px] gap-2 bg-gradient-to-r from-primary to-[#6c63ff] hover:opacity-90 shadow-xl shadow-primary/20 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95"
+                      className="min-w-[200px] gap-2 bg-gradient-to-r from-primary to-[#6c63ff] hover:opacity-90 shadow-xl shadow-primary/20 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGenerating ? (
                         <>
