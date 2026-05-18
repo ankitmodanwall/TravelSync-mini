@@ -1,6 +1,5 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage, Button, Typography } from '@/components/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +12,6 @@ import {
 import { useAuth } from '@/context/auth-context';
 import { CreditCard, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import type { User } from '@/lib/types';
 
 
@@ -48,7 +46,7 @@ export function UserNav({ user, isSidebarOpen = true }: UserNavProps) {
             variant="ghost"
             className="flex h-auto w-full items-center justify-start gap-3 px-2 py-1.5 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
-            <Avatar className="h-9 w-9">
+            <Avatar size="default" status="online">
               <AvatarImage
                 src={user.photoURL || ''}
                 alt={user.name || user.email || ''}
@@ -56,21 +54,18 @@ export function UserNav({ user, isSidebarOpen = true }: UserNavProps) {
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col space-y-0.5 overflow-hidden text-left">
-              <p className="truncate text-sm font-medium leading-none">
+              <Typography variant="small" className="truncate font-medium leading-none">
                 {user.name}
-              </p>
-              <p className="truncate text-xs leading-none text-muted-foreground">
+              </Typography>
+              <Typography variant="muted" className="truncate text-xs leading-none">
                 {user.email}
-              </p>
+              </Typography>
             </div>
           </Button>
         ) : (
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                src={user.photoURL || ''}
-                alt={user.name || user.email || ''}
-              />
+            <Avatar size="default" status="online">
+              <AvatarImage src={user.photoURL || ''} alt={user.name || user.email || ''} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </Button>
@@ -83,10 +78,10 @@ export function UserNav({ user, isSidebarOpen = true }: UserNavProps) {
       >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <Typography variant="small" className="font-medium leading-none">{user.name}</Typography>
+            <Typography variant="muted" className="leading-none">
               {user.email}
-            </p>
+            </Typography>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
