@@ -9,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { errorToMeta, logger } from '@/lib/logger';
 
 const GenerateItineraryInputSchema = z.object({
   destination: z.string().describe('The destination for the trip.'),
@@ -42,10 +43,28 @@ const generateItineraryFromPromptFlow = ai.defineFlow(
   },
   async input => {
     try {
+      logger.info('generateItineraryFromPromptFlow started.', {
+        destination: input.destination,
+        duration: input.duration,
+        tripType: input.tripType,
+        hasBudget: typeof input.budget === 'number',
+      });
+
       const {output} = await prompt(input);
+
+      logger.info('generateItineraryFromPromptFlow completed.', {
+        destination: input.destination,
+      });
+
       return output!;
     } catch (error) {
-      console.warn("AI Generation failed (possibly due to suspended API key). Returning fallback mock itinerary.", error);
+      logger.warn(
+        'generateItineraryFromPromptFlow failed, returning fallback mock itinerary.',
+        {
+          destination: input.destination,
+          ...errorToMeta(error),
+        }
+      );
       
       // Fallback mock response so the UI still works
       const mockItinerary = {
