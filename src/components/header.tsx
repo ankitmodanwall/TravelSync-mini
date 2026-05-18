@@ -1,15 +1,9 @@
-import Link from 'next/link';
-import { Button } from './ui/button';
-import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { UserNav } from './user-nav';
-import { useAuth } from '@/context/auth-context';
 import { ThemeToggle } from '@/components/theme-toggle';
 import type { ReactNode } from 'react';
 
 
 export default function Header({ children }: { children?: ReactNode }) {
-  const { user } = useAuth();
   return (
     <header
       className={cn(
@@ -20,18 +14,7 @@ export default function Header({ children }: { children?: ReactNode }) {
       {children}
       
       <div className="flex w-full items-center justify-end gap-2 md:gap-4">
-        <Button
-          asChild
-          variant="gradient"
-          size="sm"
-        >
-          <Link href="/trips/new">
-            <Plus className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">New Trip</span>
-          </Link>
-        </Button>
         <ThemeToggle />
-        { user && <UserNav user={user} isSidebarOpen={false} /> }
       </div>
     </header>
   );
