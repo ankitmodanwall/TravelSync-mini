@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { placeholderImages } from '@/lib/placeholder-images';
+import { Button, Typography } from '@/components/ui';
 
 export default function WelcomePage() {
   const welcomeHeroImage = placeholderImages.find(p => p.id === 'welcome-hero');
@@ -20,20 +20,20 @@ export default function WelcomePage() {
           data-ai-hint={welcomeHeroImage.imageHint}
         />
       )}
-      <div className="relative z-10 mx-auto grid w-[450px] gap-8 text-center text-white">
+      <div className="relative z-10 mx-auto grid w-full max-w-lg gap-8 px-6 text-center text-white">
         <div className="flex justify-center">
           <Logo className="[&>span]:text-white" />
         </div>
-        <div className="grid gap-4 animate-fade-in animation-delay-200">
-          <h1 className="text-4xl md:text-5xl font-bold font-headline leading-tight">
+        <div className="grid gap-4 animate-fade-in-up">
+          <Typography variant="h1" className="text-white text-3xl sm:text-4xl md:text-5xl">
             Craft Your Next Adventure
-          </h1>
-          <p className="text-balance text-lg text-white/80">
+          </Typography>
+          <Typography variant="lead" className="text-white/80">
             Our AI-powered planner helps you build the perfect itinerary, discover hidden gems, and collaborate with friends. Effortless planning, unforgettable journeys.
-          </p>
+          </Typography>
         </div>
-        <div className="flex flex-col gap-4 mx-auto w-full max-w-sm animate-fade-in-up animation-delay-400">
-          <Button asChild size="lg" className="w-full text-lg">
+        <div className="flex flex-col gap-4 mx-auto w-full max-w-sm animate-fade-in-up animation-delay-200">
+          <Button asChild variant="gradient" size="lg" className="w-full text-lg shadow-glow">
             <Link href="/signup">Start Planning with AI ✈️</Link>
           </Button>
           <Button asChild variant="link" size="lg" className="w-full text-white/90 hover:text-white">

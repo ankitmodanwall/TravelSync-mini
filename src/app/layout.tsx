@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import { FirebaseClientProvider } from '@/firebase';
 import { AuthRedirect } from '@/components/auth-redirect';
-import PageTransition from '@/components/ui/PageTransition';
+
 import { ThemeProvider } from '@/components/theme-provider';
 import ChatWidget from '@/components/chat/chat-widget';
 import './i18n';
@@ -29,14 +29,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <link
           href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
@@ -54,11 +46,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              <AuthRedirect>{children}</AuthRedirect>
-              <ChatWidget />
               <AuthRedirect>
-                <PageTransition>{children}</PageTransition>
+                {children}
               </AuthRedirect>
+              <ChatWidget />
               <Toaster />
             </AuthProvider>
           </ThemeProvider>
