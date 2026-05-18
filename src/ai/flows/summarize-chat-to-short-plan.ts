@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { errorToMeta, logger } from '@/lib/logger';
 
 const SummarizeChatToShortPlanInputSchema = z.object({
   chatLogs: z.string().describe('The chat logs from the trip planning session.'),
@@ -46,7 +47,22 @@ const summarizeChatToShortPlanFlow = ai.defineFlow(
     outputSchema: SummarizeChatToShortPlanOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    logger.info('summarizeChatToShortPlanFlow started.', {
+      chatLogsLength: input.chatLogs.length,
+      notesLength: input.notes.length,
+    });
+
+    try {
+      const {output} = await prompt(input);
+
+      logger.info('summarizeChatToShortPlanFlow completed.');
+
+      return output!;
+    } catch (error) {
+      logger.error('summarizeChatToShortPlanFlow failed.', {
+        ...errorToMeta(error),
+      });
+      throw error;
+    }
   }
 );

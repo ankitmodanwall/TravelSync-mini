@@ -5,6 +5,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { errorToMeta, logger } from '@/lib/logger';
 
 const TravelChatInputSchema = z.object({
   message: z.string().min(1),
@@ -54,10 +55,29 @@ const travelChatFlow = ai.defineFlow(
     outputSchema: TravelChatOutputSchema,
   },
   async input => {
-    const { output } = await prompt({
-      ...input,
-      history: input.history ?? [],
+    const history = input.history ?? [];
+
+    logger.info('travelChatFlow started.', {
+      messageLength: input.message.length,
+      historyCount: history.length,
     });
-    return output!;
+
+    try {
+      const { output } = await prompt({
+        ...input,
+        history,
+      });
+
+      logger.info('travelChatFlow completed.', {
+        historyCount: history.length,
+      });
+
+      return output!;
+    } catch (error) {
+      logger.error('travelChatFlow failed.', {
+        ...errorToMeta(error),
+      });
+      throw error;
+    }
   }
 );
